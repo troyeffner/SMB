@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge Intersections</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 20px;
+            color: #2d3748;
+            background-color: #f7fafc;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        h1 {
+            color: #1a365d;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #4a5568;
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+        .instructions {
+            background-color: #edf2f7;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 32px;
+            border-left: 4px solid #028090;
+            font-size: 14px;
+        }
+        .grid-container {
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 200px repeat(10, 80px);
+            gap: 1px;
+            background-color: #cbd5e0;
+            border: 1px solid #cbd5e0;
+        }
+        .cell {
+            background-color: white;
+            padding: 8px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .header-cell {
+            background-color: #028090;
+            color: white;
+            font-weight: 600;
+            font-size: 11px;
+            text-align: center;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            padding: 8px 4px;
+        }
+        .row-header {
+            background-color: #e2e8f0;
+            font-weight: 600;
+            font-size: 12px;
+            text-align: left;
+            padding: 8px 12px;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .corner-cell {
+            background-color: #1a365d;
+        }
+        .intersection-cell {
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 32px;
+        }
+        .intersection-cell:hover {
+            background-color: #edf2f7;
+        }
+        .intersection-cell.active {
+            background-color: #fef5e7;
+        }
+        .lightning {
+            display: none;
+            color: #e53e3e;
+            animation: pulse 0.3s ease-in-out;
+        }
+        .intersection-cell.active .lightning {
+            display: block;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .diagonal-cell {
+            background-color: #f7fafc;
+            cursor: not-allowed;
+        }
+        .controls {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        button {
+            background-color: #028090;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        button:hover {
+            background-color: #026670;
+        }
+        button.secondary {
+            background-color: #718096;
+        }
+        button.secondary:hover {
+            background-color: #4a5568;
+        }
+        .legend {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #edf2f7;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .legend-symbol {
+            font-size: 24px;
+            width: 30px;
+            text-align: center;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+                margin: 0;
+                padding: 20px;
+            }
+            .controls {
+                display: none;
+            }
+            .instructions {
+                page-break-after: avoid;
+            }
+            .grid-container {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Challenge Intersections</h1>
+            <div class="subtitle">Click intersections where challenges combine to create the most pain</div>
+        </div>
+        
+        <div class="instructions">
+            <strong>How to use:</strong> Click on any intersection cell where two different challenge areas overlap to mark it as a high-pain point. The red lightning bolt (⚡) indicates where multiple issues compound each other. Click again to remove.
+        </div>
+
+        <div class="grid-container">
+            <div class="grid" id="challengeGrid">
+                <!-- Grid will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="secondary" onclick="clearAll()">Clear All</button>
+            <button onclick="takeSnapshot()">Save as PDF</button>
+        </div>
+
+        <div class="legend">
+            <strong>Legend:</strong>
+            <div class="legend-item">
+                <span class="legend-symbol">⚡</span>
+                <span>High pain point - multiple challenges intersecting</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol" style="color: #028090;">■</span>
+                <span>Column headers - Challenge categories</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol" style="color: #4a5568;">■</span>
+                <span>Row headers - Challenge categories</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const categories = [
+            { id: 1, short: "Alignment", full: "Alignment & Getting on Same Page" },
+            { id: 2, short: "Process", full: "Process Breakdowns & Bottlenecks" },
+            { id: 3, short: "Handoffs", full: "Handoffs & Communication Gaps" },
+            { id: 4, short: "Workarounds", full: "People Working Around System" },
+            { id: 5, short: "Scaling", full: "Scaling & Growth Pains" },
+            { id: 6, short: "Technology", full: "Technology & System Integration" },
+            { id: 7, short: "Priorities", full: "Priorities & Decision-Making" },
+            { id: 8, short: "Quality", full: "Customer or Quality Issues" },
+            { id: 9, short: "Onboarding", full: "New Hire Onboarding" },
+            { id: 10, short: "Roles", full: "Unclear Roles & Responsibilities" }
+        ];
+
+        const activeCells = new Set();
+
+        function generateGrid() {
+            const grid = document.getElementById('challengeGrid');
+            
+            // Corner cell
+            grid.appendChild(createCell('corner-cell'));
+            
+            // Column headers
+            categories.forEach(cat => {
+                const cell = createCell('header-cell');
+                cell.textContent = cat.short;
+                cell.title = cat.full;
+                grid.appendChild(cell);
+            });
+            
+            // Rows
+            categories.forEach((rowCat, rowIdx) => {
+                // Row header
+                const rowHeader = createCell('row-header');
+                rowHeader.textContent = rowCat.short;
+                rowHeader.title = rowCat.full;
+                grid.appendChild(rowHeader);
+                
+                // Intersection cells
+                categories.forEach((colCat, colIdx) => {
+                    const cell = createCell('intersection-cell');
+                    
+                    // Gray out diagonal (same category)
+                    if (rowIdx === colIdx) {
+                        cell.classList.add('diagonal-cell');
+                        cell.style.cursor = 'not-allowed';
+                    } else {
+                        const cellId = `${rowCat.id}-${colCat.id}`;
+                        cell.setAttribute('data-cell-id', cellId);
+                        cell.setAttribute('data-row', rowCat.short);
+                        cell.setAttribute('data-col', colCat.short);
+                        
+                        const lightning = document.createElement('span');
+                        lightning.className = 'lightning';
+                        lightning.textContent = '⚡';
+                        cell.appendChild(lightning);
+                        
+                        cell.addEventListener('click', () => toggleCell(cellId, cell));
+                    }
+                    
+                    grid.appendChild(cell);
+                });
+            });
+        }
+
+        function createCell(className) {
+            const cell = document.createElement('div');
+            cell.className = `cell ${className}`;
+            return cell;
+        }
+
+        function toggleCell(cellId, element) {
+            if (activeCells.has(cellId)) {
+                activeCells.delete(cellId);
+                element.classList.remove('active');
+            } else {
+                activeCells.add(cellId);
+                element.classList.add('active');
+            }
+        }
+
+        function clearAll() {
+            activeCells.clear();
+            document.querySelectorAll('.intersection-cell.active').forEach(cell => {
+                cell.classList.remove('active');
+            });
+        }
+
+        function exportData() {
+            if (activeCells.size === 0) {
+                alert('No pain points marked yet. Click on intersection cells to mark high-pain areas.');
+                return;
+            }
+
+            let summary = "Challenge Intersections - High Pain Points\n";
+            summary += "=".repeat(50) + "\n\n";
+            
+            const intersections = [];
+            activeCells.forEach(cellId => {
+                const cell = document.querySelector(`[data-cell-id="${cellId}"]`);
+                if (cell) {
+                    const row = cell.getAttribute('data-row');
+                    const col = cell.getAttribute('data-col');
+                    intersections.push(`${row} × ${col}`);
+                }
+            });
+            
+            intersections.sort();
+            
+            summary += `Total high-pain intersections identified: ${intersections.length}\n\n`;
+            summary += "Pain Points:\n";
+            intersections.forEach((intersection, idx) => {
+                summary += `${idx + 1}. ${intersection}\n`;
+            });
+            
+            summary += "\n" + "=".repeat(50) + "\n";
+            summary += "These intersections represent areas where multiple challenges\n";
+            summary += "compound each other, creating the most significant pain for the business.\n";
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(summary).then(() => {
+                alert(`Summary copied to clipboard!\n\n${intersections.length} high-pain intersections identified.`);
+            }).catch(() => {
+                // Fallback: show in alert
+                alert(summary);
+            });
+        }
+
+        function takeSnapshot() {
+            // Set document title to control default PDF filename
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const timestamp = `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
+            document.title = `${timestamp}_Challenge_Intersections`;
+            
+            window.print();
+        }
+
+        // Initialize grid on page load
+        generateGrid();
+    </script>
+</body>
+</html>
