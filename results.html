@@ -207,6 +207,11 @@
             gap: 12px;
             margin-bottom: 8px;
         }
+        .mini-matrix-axes-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 10px;
+        }
         .mini-matrix-y-label {
             font-size: 11px;
             font-weight: 700;
@@ -530,13 +535,39 @@
         const ID_TO_LABEL = {};
         ALL_CATEGORIES.forEach(c => { ID_TO_LABEL[c.id] = c.label; });
 
+        const AXIS_CONFIGS = {
+            'risk-pain': {
+                yLabel: 'Business Risk (Impact)',
+                xLabel: 'Current Pain Level',
+                quadrants: {
+                    topRight:    'High Risk / High Pain',
+                    topLeft:     'High Risk / Low Pain',
+                    bottomRight: 'Low Risk / High Pain',
+                    bottomLeft:  'Low Risk / Low Pain'
+                }
+            },
+            'importance-satisfaction': {
+                yLabel: 'Importance to Business',
+                xLabel: 'Satisfaction with Current Solution',
+                quadrants: {
+                    topRight:    'High Importance / Low Satisfaction',
+                    topLeft:     'High Importance / High Satisfaction',
+                    bottomRight: 'Low Importance / Low Satisfaction',
+                    bottomLeft:  'Low Importance / High Satisfaction'
+                }
+            }
+        };
+
         function readStorage(key) {
             try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : null; }
             catch(e) { return null; }
         }
 
         const smb_selected      = readStorage('smb_selected');
-        const smb_placements    = readStorage('smb_placements');
+        const rawPlacements     = readStorage('smb_placements');
+        const axisId            = rawPlacements?.axisId || 'risk-pain';
+        const smb_placements    = rawPlacements?.items || rawPlacements;
+        const axisCfg           = AXIS_CONFIGS[axisId] || AXIS_CONFIGS['risk-pain'];
         const smb_intersections = readStorage('smb_intersections');
 
         // ── Date ──
@@ -574,20 +605,22 @@
             }
 
             const entries = Object.entries(smb_placements);
+            const q = axisCfg.quadrants;
 
             // Mini matrix visual
             let matrixHtml = `
+                <div class="mini-matrix-axes-label">Axes: ${axisCfg.yLabel} vs. ${axisCfg.xLabel}</div>
                 <div class="mini-matrix-wrap">
                     <div class="mini-matrix-outer">
-                        <div class="mini-matrix-y-label">↑ Business Risk (Impact) ↑</div>
+                        <div class="mini-matrix-y-label">↑ ${axisCfg.yLabel} ↑</div>
                         <div class="mini-matrix-inner">
                             <div class="mini-matrix" id="miniMatrix">
                                 <div class="mini-matrix-vline"></div>
                                 <div class="mini-matrix-hline"></div>
-                                <div class="mini-matrix-qlabel q2">High Risk<br>Low Pain</div>
-                                <div class="mini-matrix-qlabel q1">High Risk<br>High Pain</div>
-                                <div class="mini-matrix-qlabel q3">Low Risk<br>Low Pain</div>
-                                <div class="mini-matrix-qlabel q4">Low Risk<br>High Pain</div>
+                                <div class="mini-matrix-qlabel q2">${q.topLeft.replace(' / ', '<br>')}</div>
+                                <div class="mini-matrix-qlabel q1">${q.topRight.replace(' / ', '<br>')}</div>
+                                <div class="mini-matrix-qlabel q3">${q.bottomLeft.replace(' / ', '<br>')}</div>
+                                <div class="mini-matrix-qlabel q4">${q.bottomRight.replace(' / ', '<br>')}</div>
             `;
             const legendItems = [];
             entries.forEach(([id, data], idx) => {
@@ -597,38 +630,34 @@
             });
             matrixHtml += `
                             </div>
-                            <div class="mini-matrix-x-label">→ Current Pain Level →</div>
+                            <div class="mini-matrix-x-label">→ ${axisCfg.xLabel} →</div>
                         </div>
                     </div>
                     <div class="mini-matrix-legend">${legendItems.join('')}</div>
                 </div>
             `;
 
-            // Quadrant groupings
-            const quadrants = {
-                'High Risk / High Pain': [],
-                'High Risk / Low Pain':  [],
-                'Low Risk / High Pain':  [],
-                'Low Risk / Low Pain':   []
-            };
+            // Quadrant groupings — dynamic from axisCfg
+            const quadrantBuckets = {};
+            Object.values(q).forEach(name => { quadrantBuckets[name] = []; });
             entries.forEach(([id, data]) => {
-                if (quadrants[data.quadrant]) quadrants[data.quadrant].push(data.label);
+                if (quadrantBuckets[data.quadrant] !== undefined) quadrantBuckets[data.quadrant].push(data.label);
             });
 
             const quadrantDefs = [
-                { key: 'High Risk / High Pain', cls: 'q-urgent', title: 'High Risk / High Pain — Act now' },
-                { key: 'High Risk / Low Pain',  cls: 'q-watch',  title: 'High Risk / Low Pain — Watch carefully' },
-                { key: 'Low Risk / High Pain',  cls: 'q-quick',  title: 'Low Risk / High Pain — Quick wins' },
-                { key: 'Low Risk / Low Pain',   cls: 'q-defer',  title: 'Low Risk / Low Pain — Defer' }
+                { key: q.topRight,    cls: 'q-urgent', title: `${q.topRight} — Act now` },
+                { key: q.topLeft,     cls: 'q-watch',  title: `${q.topLeft} — Watch carefully` },
+                { key: q.bottomRight, cls: 'q-quick',  title: `${q.bottomRight} — Quick wins` },
+                { key: q.bottomLeft,  cls: 'q-defer',  title: `${q.bottomLeft} — Defer` }
             ];
 
             let groupsHtml = '<div class="quadrant-groups">';
-            quadrantDefs.forEach(q => {
-                const items = quadrants[q.key];
-                if (!items.length) return;
+            quadrantDefs.forEach(qd => {
+                const items = quadrantBuckets[qd.key];
+                if (!items || !items.length) return;
                 groupsHtml += `
-                    <div class="quadrant-group ${q.cls}">
-                        <div class="quadrant-group-title">${q.title}</div>
+                    <div class="quadrant-group ${qd.cls}">
+                        <div class="quadrant-group-title">${qd.title}</div>
                         ${items.map(label => `
                             <div class="placement-item">
                                 <div class="placement-dot"></div>

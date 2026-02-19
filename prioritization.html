@@ -226,6 +226,24 @@
             color: #4a5568;
             font-size: 16px;
         }
+        .axis-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+        .axis-selector select {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1a365d;
+            background: white;
+            cursor: pointer;
+        }
         .instructions {
             background-color: #fff5f5;
             padding: 20px;
@@ -473,6 +491,13 @@
 
     <div class="page-body">
     <div class="container">
+        <div class="axis-selector">
+            <label for="axisSelect">View by:</label>
+            <select id="axisSelect" onchange="switchAxis(this.value)">
+                <option value="risk-pain">Business Risk / Current Pain Level</option>
+                <option value="importance-satisfaction">Importance to Business / Satisfaction</option>
+            </select>
+        </div>
         <div class="instructions">
             <strong>How to use this tool:</strong> Drag challenge categories from the left onto the matrix. Place them based on:
             <br><br>
@@ -562,6 +587,32 @@
         })();
         const totalChips = smbSelected ? smbSelected.length : 10;
 
+        const AXIS_CONFIGS = {
+            'risk-pain': {
+                yLabel: 'Business Risk (Impact)',
+                xLabel: 'Current Pain Level',
+                quadrants: {
+                    topRight:    'High Risk / High Pain',
+                    topLeft:     'High Risk / Low Pain',
+                    bottomRight: 'Low Risk / High Pain',
+                    bottomLeft:  'Low Risk / Low Pain'
+                },
+                instructions: '<strong>Y-axis (Business Risk):</strong> How much this problem costs you (money, time, customer trust, employee morale)<br><strong>X-axis (Current Pain Level):</strong> How much this problem is hurting your team right now (frustration, daily friction, operational pain)'
+            },
+            'importance-satisfaction': {
+                yLabel: 'Importance to Business',
+                xLabel: 'Satisfaction with Current Solution',
+                quadrants: {
+                    topRight:    'High Importance / Low Satisfaction',
+                    topLeft:     'High Importance / High Satisfaction',
+                    bottomRight: 'Low Importance / Low Satisfaction',
+                    bottomLeft:  'Low Importance / High Satisfaction'
+                },
+                instructions: '<strong>Y-axis (Importance):</strong> How critical is this area to your business goals and operations<br><strong>X-axis (Satisfaction):</strong> How satisfied are you with how this is currently handled (right = more satisfied)'
+            }
+        };
+        let currentAxis = localStorage.getItem('smb_axis') || 'risk-pain';
+
         let draggedElement = null;
         let placedChips = new Map();
         const countEl = document.getElementById('selectionCount');
@@ -587,7 +638,27 @@
             }
         });
 
+        function applyAxis(id) {
+            const cfg = AXIS_CONFIGS[id];
+            document.querySelector('.y-axis').textContent = cfg.yLabel;
+            document.querySelector('.x-axis').textContent = cfg.xLabel;
+            document.querySelector('.q1').textContent = cfg.quadrants.topRight;
+            document.querySelector('.q2').textContent = cfg.quadrants.topLeft;
+            document.querySelector('.q3').textContent = cfg.quadrants.bottomLeft;
+            document.querySelector('.q4').textContent = cfg.quadrants.bottomRight;
+            document.querySelector('.instructions').innerHTML =
+                '<strong>How to use this tool:</strong> Drag challenge categories from the left onto the matrix. Place them based on:<br><br>' + cfg.instructions;
+        }
+
+        function switchAxis(id) {
+            currentAxis = id;
+            localStorage.setItem('smb_axis', id);
+            applyAxis(id);
+        }
+
         updateBar(); // initialize counter with correct totalChips on load
+        document.getElementById('axisSelect').value = currentAxis;
+        applyAxis(currentAxis);
 
         // Setup drop zone
         const matrix = document.getElementById('matrix');
@@ -678,6 +749,10 @@
             });
 
             localStorage.removeItem('smb_placements');
+            localStorage.removeItem('smb_axis');
+            currentAxis = 'risk-pain';
+            document.getElementById('axisSelect').value = 'risk-pain';
+            applyAxis('risk-pain');
             updateBar();
         }
 
@@ -685,14 +760,15 @@
             const matrixEl = document.getElementById('matrix');
             const matrixRect = matrixEl.getBoundingClientRect();
             const placements = {};
+            const q = AXIS_CONFIGS[currentAxis].quadrants;
             placedChips.forEach((chipEl, id) => {
                 const x_pct = (parseFloat(chipEl.style.left) / matrixRect.width) * 100;
                 const y_pct = (parseFloat(chipEl.style.top) / matrixRect.height) * 100;
                 let quadrant;
-                if (x_pct > 50 && y_pct < 50)        quadrant = 'High Risk / High Pain';
-                else if (x_pct <= 50 && y_pct < 50)  quadrant = 'High Risk / Low Pain';
-                else if (x_pct <= 50 && y_pct >= 50) quadrant = 'Low Risk / Low Pain';
-                else                                  quadrant = 'Low Risk / High Pain';
+                if (x_pct > 50 && y_pct < 50)        quadrant = q.topRight;
+                else if (x_pct <= 50 && y_pct < 50)  quadrant = q.topLeft;
+                else if (x_pct <= 50 && y_pct >= 50) quadrant = q.bottomLeft;
+                else                                  quadrant = q.bottomRight;
                 placements[id] = {
                     x_pct: parseFloat(x_pct.toFixed(1)),
                     y_pct: parseFloat(y_pct.toFixed(1)),
@@ -700,7 +776,7 @@
                     quadrant
                 };
             });
-            localStorage.setItem('smb_placements', JSON.stringify(placements));
+            localStorage.setItem('smb_placements', JSON.stringify({ axisId: currentAxis, items: placements }));
             window.location.href = 'intersection.html';
         }
 
