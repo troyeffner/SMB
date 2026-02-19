@@ -1,0 +1,7 @@
+{
+  "name": "smb-business-needs",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve . -l 3000"
+  }
+}
