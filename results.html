@@ -136,17 +136,43 @@
         .section-navy  { border-left: 4px solid #1a365d; }
         .section-number.navy { background-color: #e8edf5; color: #1a365d; }
 
-        /* ── Section 4: Recommendations ── */
+        /* ── Section 4: Recommendations (accordion) ── */
         .rec-challenge {
-            padding: 16px 0;
             border-bottom: 1px solid #f0f4f8;
         }
         .rec-challenge:last-child { border-bottom: none; }
+        .rec-challenge-toggle {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none;
+            border: none;
+            padding: 14px 0;
+            cursor: pointer;
+            text-align: left;
+            border-bottom: 1px solid transparent;
+        }
+        .rec-challenge-toggle[aria-expanded="true"] {
+            border-bottom: 1px solid #e2e8f0;
+        }
         .rec-challenge-name {
             font-size: 14px;
             font-weight: 700;
             color: #1a365d;
-            margin-bottom: 10px;
+        }
+        .rec-chevron {
+            width: 16px;
+            height: 16px;
+            color: #718096;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+        .rec-challenge-toggle[aria-expanded="true"] .rec-chevron {
+            transform: rotate(180deg);
+        }
+        .rec-challenge-body {
+            padding: 12px 0 4px;
         }
         .rec-approaches {
             display: flex;
@@ -579,7 +605,7 @@
                 <div class="section-number navy">4</div>
                 <div class="section-header-text">
                     <div class="section-label-text">Next Steps</div>
-                    <div class="section-title">Service Design Starting Points</div>
+                    <div class="section-title">Starting Points</div>
                 </div>
             </div>
             <div class="section-body">
@@ -625,16 +651,28 @@
                     topLeft:     'High Risk / Low Pain',
                     bottomRight: 'Low Risk / High Pain',
                     bottomLeft:  'Low Risk / Low Pain'
+                },
+                urgency: {
+                    topRight:    'act-now',
+                    topLeft:     'watch',
+                    bottomRight: 'quick-wins',
+                    bottomLeft:  'defer'
                 }
             },
             'importance-satisfaction': {
                 yLabel: 'Importance to Business',
                 xLabel: 'Satisfaction with Current Solution',
                 quadrants: {
-                    topRight:    'High Importance / Low Satisfaction',
-                    topLeft:     'High Importance / High Satisfaction',
-                    bottomRight: 'Low Importance / Low Satisfaction',
-                    bottomLeft:  'Low Importance / High Satisfaction'
+                    topRight:    'High Importance / High Satisfaction',
+                    topLeft:     'High Importance / Low Satisfaction',
+                    bottomRight: 'Low Importance / High Satisfaction',
+                    bottomLeft:  'Low Importance / Low Satisfaction'
+                },
+                urgency: {
+                    topLeft:     'act-now',
+                    topRight:    'watch',
+                    bottomLeft:  'defer',
+                    bottomRight: 'quick-wins'
                 }
             }
         };
@@ -725,12 +763,19 @@
                 if (quadrantBuckets[data.quadrant] !== undefined) quadrantBuckets[data.quadrant].push(data.label);
             });
 
-            const quadrantDefs = [
-                { key: q.topRight,    cls: 'q-urgent', title: `${q.topRight} — Act now` },
-                { key: q.topLeft,     cls: 'q-watch',  title: `${q.topLeft} — Watch carefully` },
-                { key: q.bottomRight, cls: 'q-quick',  title: `${q.bottomRight} — Quick wins` },
-                { key: q.bottomLeft,  cls: 'q-defer',  title: `${q.bottomLeft} — Defer` }
-            ];
+            const urgencyConfig = {
+                'act-now':    { cls: 'q-urgent', suffix: '— Act now' },
+                'watch':      { cls: 'q-watch',  suffix: '— Watch carefully' },
+                'quick-wins': { cls: 'q-quick',  suffix: '— Quick wins' },
+                'defer':      { cls: 'q-defer',  suffix: '— Defer' }
+            };
+            const urgencyOrder = ['act-now', 'watch', 'quick-wins', 'defer'];
+            const quadrantDefs = urgencyOrder.map(level => {
+                const pos = Object.keys(axisCfg.urgency).find(k => axisCfg.urgency[k] === level);
+                const key = axisCfg.quadrants[pos];
+                const cfg = urgencyConfig[level];
+                return { key, cls: cfg.cls, title: `${key} ${cfg.suffix}` };
+            });
 
             let groupsHtml = '<div class="quadrant-groups">';
             quadrantDefs.forEach(qd => {
@@ -780,7 +825,15 @@
             `).join('');
         })();
 
-        // ── Section 4: Service Design Starting Points ──
+        // ── Section 4 accordion toggle ──
+        function toggleRec(btn) {
+            const body = btn.nextElementSibling;
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!expanded));
+            body.hidden = expanded;
+        }
+
+        // ── Section 4: Starting Points ──
         (function() {
             const ID_TO_SLUG = {
                 1: 'alignment', 2: 'process', 3: 'handoffs', 4: 'workarounds',
@@ -806,14 +859,24 @@
                 const stepsHtml = rec.firstSteps.map(s => `<li>${s}</li>`).join('');
                 return `
                     <div class="rec-challenge">
-                        <div class="rec-challenge-name">${cat ? cat.label : slug}</div>
-                        <div class="rec-approaches">${approachesHtml}</div>
-                        <div class="rec-firststeps-label">First Steps</div>
-                        <ul class="rec-firststeps">${stepsHtml}</ul>
+                        <button class="rec-challenge-toggle" onclick="toggleRec(this)" aria-expanded="false">
+                            <span class="rec-challenge-name">${cat ? cat.label : slug}</span>
+                            <svg class="rec-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="rec-challenge-body" hidden>
+                            <div class="rec-approaches">${approachesHtml}</div>
+                            <div class="rec-firststeps-label">First Steps</div>
+                            <ul class="rec-firststeps">${stepsHtml}</ul>
+                        </div>
                     </div>
                 `;
             }).join('');
             el.innerHTML = html || '<div class="empty-state">No recommendations available.</div>';
+            // Open the first item by default
+            const firstToggle = el.querySelector('.rec-challenge-toggle');
+            if (firstToggle) toggleRec(firstToggle);
         })();
 
         // ── Save as PDF ──

@@ -206,20 +206,22 @@
             background-color: #edf2f7;
         }
         .intersection-cell.active {
-            background-color: #fef5e7;
+            background-color: #e6f7f9;
         }
-        .lightning {
+        .cell-marker {
             display: none;
-            color: #e53e3e;
-            animation: pulse 0.3s ease-in-out;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #028090;
         }
-        .intersection-cell.active .lightning {
+        .intersection-cell.active .cell-marker {
             display: block;
         }
-        @keyframes pulse {
-            0% { transform: scale(0.8); opacity: 0.5; }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); opacity: 1; }
+        .mirror-cell {
+            background-color: #e2e8f0;
+            cursor: not-allowed;
+            pointer-events: none;
         }
         .diagonal-cell {
             background-color: #f7fafc;
@@ -450,7 +452,7 @@
         </div>
 
         <div class="instructions">
-            <strong>How to use:</strong> Click on any intersection cell where two different challenge areas overlap to mark it as a high-pain point. The red lightning bolt (⚡) indicates where multiple issues compound each other. Click again to remove.
+            <strong>How to use:</strong> Click any cell in the lower-left triangle where two challenges overlap to mark it as a high-pain point. A teal dot indicates where multiple issues compound each other. Click again to remove.
         </div>
 
         <div class="grid-container">
@@ -464,8 +466,8 @@
         <div class="legend">
             <strong>Legend:</strong>
             <div class="legend-item">
-                <span class="legend-symbol">⚡</span>
-                <span>High pain point - multiple challenges intersecting</span>
+                <span class="legend-symbol" style="display:flex;align-items:center;justify-content:center;"><span style="display:inline-block;width:16px;height:16px;border-radius:50%;background-color:#028090;"></span></span>
+                <span>High pain point — multiple challenges intersecting</span>
             </div>
             <div class="legend-item">
                 <span class="legend-symbol" style="color: #028090;">■</span>
@@ -474,6 +476,10 @@
             <div class="legend-item">
                 <span class="legend-symbol" style="color: #4a5568;">■</span>
                 <span>Row headers - Challenge categories</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol" style="background-color:#e2e8f0;display:inline-block;width:24px;height:24px;border-radius:3px;"></span>
+                <span>Mirror cells — use only the lower-left triangle</span>
             </div>
         </div>
     </div>
@@ -560,20 +566,22 @@
                 activeCategories.forEach((colCat, colIdx) => {
                     const cell = createCell('intersection-cell');
 
-                    // Gray out diagonal (same category)
+                    // Gray out diagonal (same category) and upper triangle
                     if (rowIdx === colIdx) {
                         cell.classList.add('diagonal-cell');
                         cell.style.cursor = 'not-allowed';
+                    } else if (colIdx > rowIdx) {
+                        // Upper triangle — disabled, solid gray
+                        cell.classList.add('mirror-cell');
                     } else {
                         const cellId = `${rowCat.id}-${colCat.id}`;
                         cell.setAttribute('data-cell-id', cellId);
                         cell.setAttribute('data-row', rowCat.short);
                         cell.setAttribute('data-col', colCat.short);
 
-                        const lightning = document.createElement('span');
-                        lightning.className = 'lightning';
-                        lightning.textContent = '⚡';
-                        cell.appendChild(lightning);
+                        const marker = document.createElement('span');
+                        marker.className = 'cell-marker';
+                        cell.appendChild(marker);
 
                         cell.addEventListener('click', () => toggleCell(cellId, cell));
                     }

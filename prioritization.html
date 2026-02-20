@@ -603,12 +603,12 @@
                 yLabel: 'Importance to Business',
                 xLabel: 'Satisfaction with Current Solution',
                 quadrants: {
-                    topRight:    'High Importance / Low Satisfaction',
-                    topLeft:     'High Importance / High Satisfaction',
-                    bottomRight: 'Low Importance / Low Satisfaction',
-                    bottomLeft:  'Low Importance / High Satisfaction'
+                    topRight:    'High Importance / High Satisfaction',
+                    topLeft:     'High Importance / Low Satisfaction',
+                    bottomRight: 'Low Importance / High Satisfaction',
+                    bottomLeft:  'Low Importance / Low Satisfaction'
                 },
-                instructions: '<strong>Y-axis (Importance):</strong> How critical is this area to your business goals and operations<br><strong>X-axis (Satisfaction):</strong> How satisfied are you with how this is currently handled (right = more satisfied)'
+                instructions: '<strong>Y-axis (Importance):</strong> How critical is this area to your business goals and operations<br><strong>X-axis (Satisfaction):</strong> How satisfied are you with how this area is currently handled (right = more satisfied, left = more problems)'
             }
         };
         let currentAxis = localStorage.getItem('smb_axis') || 'risk-pain';
@@ -648,6 +648,7 @@
             document.querySelector('.q4').textContent = cfg.quadrants.bottomRight;
             document.querySelector('.instructions').innerHTML =
                 '<strong>How to use this tool:</strong> Drag challenge categories from the left onto the matrix. Place them based on:<br><br>' + cfg.instructions;
+            document.querySelector('.chips-header').textContent = (id === 'importance-satisfaction') ? 'Challenge Areas' : 'Challenge Categories';
         }
 
         function switchAxis(id) {
