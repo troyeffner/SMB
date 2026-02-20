@@ -290,6 +290,7 @@
             margin-top: 6px;
         }
         .challenge-name { font-size: 14px; font-weight: 600; color: #2d3748; }
+        .challenge-desc { font-size: 13px; color: #718096; line-height: 1.5; margin-top: 3px; }
 
         /* ── Section 2: Mini matrix ── */
         .mini-matrix-wrap { margin-bottom: 24px; }
@@ -706,13 +707,24 @@
                 el.innerHTML = '<div class="empty-state">No challenges selected yet. <a href="businessopps.html">Complete Step 1</a> to see results here.</div>';
                 return;
             }
+            const ID_TO_SLUG = {
+                1: 'alignment', 2: 'process', 3: 'handoffs', 4: 'workarounds',
+                5: 'scaling', 6: 'technology', 7: 'priorities', 8: 'quality',
+                9: 'onboarding', 10: 'roles'
+            };
             const items = smb_selected.map(id => ALL_CATEGORIES.find(c => c.id === id)).filter(Boolean);
-            el.innerHTML = '<ul class="challenge-list">' + items.map(cat => `
+            el.innerHTML = '<ul class="challenge-list">' + items.map(cat => {
+                const slug = ID_TO_SLUG[cat.id];
+                const desc = (typeof challengesContent !== 'undefined') && challengesContent.discover && challengesContent.discover[slug]?.whatThisMeans;
+                return `
                 <li class="challenge-item">
                     <div class="challenge-dot"></div>
-                    <div class="challenge-name">${cat.label}</div>
-                </li>
-            `).join('') + '</ul>';
+                    <div>
+                        <div class="challenge-name">${cat.label}</div>
+                        ${desc ? `<div class="challenge-desc">${desc}</div>` : ''}
+                    </div>
+                </li>`;
+            }).join('') + '</ul>';
         })();
 
         // ── Section 2: Priority Matrix ──
