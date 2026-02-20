@@ -215,28 +215,36 @@
         .category-card.selected .prompt {
             background-color: #e6f7f9;
         }
-        .examples-header {
-            font-size: 12px;
-            color: #028090;
+        .content-section {
+            margin-top: 14px;
+        }
+        .content-label {
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            margin-bottom: 8px;
+            color: #028090;
+            margin-bottom: 4px;
         }
-        .examples {
+        .content-text {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+        .symptoms-list {
             list-style: none;
             padding-left: 0;
             margin: 0;
         }
-        .examples li {
+        .symptoms-list li {
             padding-left: 18px;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             position: relative;
             color: #4a5568;
             font-size: 13px;
             line-height: 1.4;
         }
-        .examples li:before {
+        .symptoms-list li::before {
             content: "";
             position: absolute;
             left: 0;
@@ -391,7 +399,10 @@
                 font-size: 14px;
                 margin-bottom: 8px;
             }
-            .examples li {
+            .content-text {
+                font-size: 12px;
+            }
+            .symptoms-list li {
                 font-size: 12px;
                 margin-bottom: 3px;
             }
@@ -407,6 +418,7 @@
             }
         }
     </style>
+    <script src="challenges-content.js"></script>
 </head>
 <body>
 
@@ -456,135 +468,7 @@
             <strong>For the participant:</strong> Pick one or more topics below that resonate with challenges in your business. These prompts will help us explore what's actually happening in your organization.
         </div>
 
-        <div class="category-card" data-id="1">
-            <div class="card-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            <div class="category-title">Alignment & Getting on the Same Page</div>
-            <div class="prompt">Tell me about a time when different people or departments couldn't agree on what to do, or when everyone seemed to be working toward different goals.</div>
-            <div class="examples-header">For example:</div>
-            <ul class="examples">
-                <li>Sales promises things operations can't deliver</li>
-                <li>Leadership team can't agree on what to prioritize this quarter</li>
-                <li>Different managers giving employees conflicting direction</li>
-                <li>Teams working on duplicate efforts because nobody's coordinating</li>
-            </ul>
-        </div>
-
-        <div class="category-card" data-id="2">
-            <div class="card-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            <div class="category-title">Process Breakdowns & Bottlenecks</div>
-            <div class="prompt">Walk me through something that should be simple in your business but somehow always gets complicated or takes way longer than it should.</div>
-            <div class="examples-header">For example:</div>
-            <ul class="examples">
-                <li>Orders that sit waiting for approval for days</li>
-                <li>Customer requests that bounce between three different people</li>
-                <li>Reports that take hours to compile manually</li>
-                <li>Simple tasks that require way too many steps</li>
-            </ul>
-        </div>
-
-        <div class="category-card" data-id="3">
-            <div class="card-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            <div class="category-title">Handoffs & Communication Gaps</div>
-            <div class="prompt">Describe a situation where work moves from one person or team to another, and something regularly gets lost, forgotten, or done wrong in that handoff.</div>
-            <div class="examples-header">For example:</div>
-            <ul class="examples">
-                <li>Information gets lost when sales hands off to delivery</li>
-                <li>Customer requests fall through the cracks between departments</li>
-                <li>Nobody knows who's supposed to follow up</li>
-                <li>The same questions get asked over and over at each step</li>
-            </ul>
-        </div>
-
-        <div class="category-card" data-id="4">
-            <div class="card-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            <div class="category-title">People Working Around the System</div>
-            <div class="prompt">Tell me about a workaround your team has created — something they do differently than the "official" way because the official way doesn't work.</div>
-            <div class="examples-header">For example:</div>
-            <ul class="examples">
-                <li>Keeping separate spreadsheets because the software doesn't do what you need</li>
-                <li>Informal phone calls to get things done faster than the official process</li>
-                <li>Skipping steps that slow things down but don't add value</li>
-                <li>Personal systems people use because the company system is broken</li>
-            </ul>
-        </div>
-
-        <div class="category-card" data-id="5">
-            <div class="card-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            <div class="category-title">Scaling & Growth Pains</div>
-            <div class="prompt">Describe something that worked fine when you were smaller but is now causing problems as you've grown.</div>
-            <div class="examples-header">For example:</div>
-            <ul class="examples">
-                <li>The owner used to handle everything, now things slip through the cracks</li>
-                <li>Everyone used to just know what to do, now new people are lost</li>
-                <li>Systems that worked for 10 people are breaking down at 30</li>
-                <li>Quality control that was informal is now inconsistent</li>
-            </ul>
-        </div>
-
-        <div class="category-card" data-id="6">
-            <div class="card-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            <div class="category-title">Technology & System Integration</div>
-            <div class="prompt">Tell me about software or systems you're using that don't talk to each other the way you need them to, or that create more work than they save.</div>
-            <div class="examples-header">For example:</div>
-            <ul class="examples">
-                <li>Entering the same information in three different places</li>
-                <li>Data that doesn't sync between systems</li>
-                <li>New software that nobody actually uses because it's too complicated</li>
-                <li>Reports that require manual data compilation from multiple sources</li>
-            </ul>
-        </div>
-
-        <div class="category-card" data-id="7">
-            <div class="card-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            <div class="category-title">Priorities & Decision-Making</div>
-            <div class="prompt">Walk me through a time when you had multiple problems or opportunities and struggled to figure out which one to tackle first.</div>
-            <div class="examples-header">For example:</div>
-            <ul class="examples">
-                <li>Everything feels urgent, nothing gets finished</li>
-                <li>Not sure if you should invest in people, processes, or technology</li>
-                <li>Different stakeholders pushing for different priorities</li>
-                <li>Knowing something needs to change but not knowing where to start</li>
-            </ul>
-        </div>
-
-        <div class="category-card" data-id="8">
-            <div class="card-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            <div class="category-title">Customer or Quality Issues</div>
-            <div class="prompt">Describe a recurring complaint or quality problem where you're not sure if it's a training issue, a process issue, or something else.</div>
-            <div class="examples-header">For example:</div>
-            <ul class="examples">
-                <li>Customers complaining about the same thing over and over</li>
-                <li>Quality inconsistencies depending on who does the work</li>
-                <li>Mistakes that happen even though people know better</li>
-                <li>Service issues that training doesn't seem to fix</li>
-            </ul>
-        </div>
-
-        <div class="category-card" data-id="9">
-            <div class="card-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            <div class="category-title">New Hire Onboarding</div>
-            <div class="prompt">Tell me about what happens when someone new joins — what do they struggle to learn, and what takes longer than it should for them to be productive?</div>
-            <div class="examples-header">For example:</div>
-            <ul class="examples">
-                <li>New people asking the same questions because nothing's written down</li>
-                <li>Taking months to learn things that should take weeks</li>
-                <li>Heavy reliance on one person to train everyone</li>
-                <li>New hires not knowing who to ask for what</li>
-            </ul>
-        </div>
-
-        <div class="category-card" data-id="10">
-            <div class="card-check"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            <div class="category-title">Unclear Roles & Responsibilities</div>
-            <div class="prompt">Describe a situation where it's not clear who's supposed to do something, or where multiple people think they're in charge of the same thing.</div>
-            <div class="examples-header">For example:</div>
-            <ul class="examples">
-                <li>Tasks falling through the cracks because everyone assumes someone else will do it</li>
-                <li>Duplicate work because people don't know others are handling it</li>
-                <li>Conflicts over who has decision-making authority</li>
-                <li>Confusion about who owns which customer relationships</li>
-            </ul>
-        </div>
+        <div id="cardsList"></div>
 
     </div>
 
@@ -609,7 +493,56 @@
     </div>
 
     <script>
-        const cards = document.querySelectorAll('.category-card');
+        // ── ID → slug mapping ──
+        const ID_TO_SLUG = {
+            1: 'alignment', 2: 'process', 3: 'handoffs', 4: 'workarounds',
+            5: 'scaling', 6: 'technology', 7: 'priorities', 8: 'quality',
+            9: 'onboarding', 10: 'roles'
+        };
+
+        // ── Conversation-starter prompts (one per challenge) ──
+        const CARD_PROMPTS = {
+            alignment:   "Tell me about a time when different people or departments couldn't agree on what to do, or when everyone seemed to be working toward different goals.",
+            process:     "Walk me through something that should be simple in your business but somehow always gets complicated or takes way longer than it should.",
+            handoffs:    "Describe a situation where work moves from one person or team to another, and something regularly gets lost, forgotten, or done wrong in that handoff.",
+            workarounds: "Tell me about a workaround your team has created — something they do differently than the \"official\" way because the official way doesn't work.",
+            scaling:     "Describe something that worked fine when you were smaller but is now causing problems as you've grown.",
+            technology:  "Tell me about software or systems you're using that don't talk to each other the way you need them to, or that create more work than they save.",
+            priorities:  "Walk me through a time when you had multiple problems or opportunities and struggled to figure out which one to tackle first.",
+            quality:     "Describe a recurring complaint or quality problem where you're not sure if it's a training issue, a process issue, or something else.",
+            onboarding:  "Tell me about what happens when someone new joins — what do they struggle to learn, and what takes longer than it should for them to be productive?",
+            roles:       "Describe a situation where it's not clear who's supposed to do something, or where multiple people think they're in charge of the same thing."
+        };
+
+        const CHECK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
+
+        // ── Generate cards from challengesContent ──
+        const cardsHtml = [1,2,3,4,5,6,7,8,9,10].map(numId => {
+            const slug = ID_TO_SLUG[numId];
+            const entry = challengesContent.discover[slug];
+            const symptomsHtml = entry.symptoms.map(s => `<li>${s}</li>`).join('');
+            return `
+            <div class="category-card" data-id="${numId}">
+                <div class="card-check">${CHECK_SVG}</div>
+                <div class="category-title">${entry.name}</div>
+                <div class="prompt">${CARD_PROMPTS[slug]}</div>
+                <div class="content-section">
+                    <div class="content-label">What this means</div>
+                    <div class="content-text">${entry.whatThisMeans}</div>
+                </div>
+                <div class="content-section">
+                    <div class="content-label">Common symptoms</div>
+                    <ul class="symptoms-list">${symptomsHtml}</ul>
+                </div>
+                <div class="content-section">
+                    <div class="content-label">Why this happens</div>
+                    <div class="content-text">${entry.whyThisHappens}</div>
+                </div>
+            </div>`;
+        }).join('');
+        document.getElementById('cardsList').innerHTML = cardsHtml;
+
+        // ── Wire up selection after cards are in DOM ──
         const countEl = document.getElementById('selectionCount');
         const clearBtn = document.getElementById('clearBtn');
         const pdfBtn = document.getElementById('pdfBtn');
@@ -617,7 +550,7 @@
         const nextHint = document.getElementById('nextHint');
         let selectedCount = 0;
 
-        cards.forEach(card => {
+        document.querySelectorAll('.category-card').forEach(card => {
             card.addEventListener('click', () => toggleCard(card));
         });
 
@@ -643,7 +576,7 @@
         }
 
         function clearAll() {
-            cards.forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
             selectedCount = 0;
             localStorage.removeItem('smb_selected');
             updateBar();

@@ -133,6 +133,72 @@
         .section-teal  { border-left: 4px solid #028090; }
         .section-red   { border-left: 4px solid #e53e3e; }
         .section-blue  { border-left: 4px solid #2b6cb0; }
+        .section-navy  { border-left: 4px solid #1a365d; }
+        .section-number.navy { background-color: #e8edf5; color: #1a365d; }
+
+        /* ── Section 4: Recommendations ── */
+        .rec-challenge {
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        .rec-challenge:last-child { border-bottom: none; }
+        .rec-challenge-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 10px;
+        }
+        .rec-approaches {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .rec-approach {
+            background: #f7fafc;
+            border-radius: 6px;
+            padding: 10px 14px;
+            border-left: 3px solid #1a365d;
+        }
+        .rec-approach-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 3px;
+        }
+        .rec-approach-desc {
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+        .rec-firststeps-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #4a5568;
+            margin-bottom: 6px;
+        }
+        .rec-firststeps {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .rec-firststeps li {
+            font-size: 12px;
+            color: #4a5568;
+            padding-left: 14px;
+            position: relative;
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+        .rec-firststeps li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #1a365d;
+            font-size: 11px;
+        }
 
         .section-header {
             display: flex;
@@ -421,6 +487,7 @@
             }
         }
     </style>
+    <script src="challenges-content.js"></script>
 </head>
 <body>
 
@@ -503,6 +570,20 @@
             </div>
             <div class="section-body">
                 <div id="intersectionsList"></div>
+            </div>
+        </div>
+
+        <!-- Section 4: Service Design Starting Points -->
+        <div class="results-section section-navy">
+            <div class="section-header">
+                <div class="section-number navy">4</div>
+                <div class="section-header-text">
+                    <div class="section-label-text">Next Steps</div>
+                    <div class="section-title">Service Design Starting Points</div>
+                </div>
+            </div>
+            <div class="section-body">
+                <div id="recommendationsList"></div>
             </div>
         </div>
 
@@ -697,6 +778,42 @@
                     </div>
                 </div>
             `).join('');
+        })();
+
+        // ── Section 4: Service Design Starting Points ──
+        (function() {
+            const ID_TO_SLUG = {
+                1: 'alignment', 2: 'process', 3: 'handoffs', 4: 'workarounds',
+                5: 'scaling', 6: 'technology', 7: 'priorities', 8: 'quality',
+                9: 'onboarding', 10: 'roles'
+            };
+            const el = document.getElementById('recommendationsList');
+            if (!smb_selected || smb_selected.length === 0) {
+                el.innerHTML = '<div class="empty-state">No challenges selected yet. <a href="businessopps.html">Complete Step 1</a> to see recommendations here.</div>';
+                return;
+            }
+            const html = smb_selected.map(numId => {
+                const slug = ID_TO_SLUG[numId];
+                const cat = ALL_CATEGORIES.find(c => c.id === numId);
+                const rec = (typeof challengesContent !== 'undefined') && challengesContent.recommendations && challengesContent.recommendations[slug];
+                if (!rec) return '';
+                const approachesHtml = rec.approaches.map(a => `
+                    <div class="rec-approach">
+                        <div class="rec-approach-name">${a.name}</div>
+                        <div class="rec-approach-desc">${a.description}</div>
+                    </div>
+                `).join('');
+                const stepsHtml = rec.firstSteps.map(s => `<li>${s}</li>`).join('');
+                return `
+                    <div class="rec-challenge">
+                        <div class="rec-challenge-name">${cat ? cat.label : slug}</div>
+                        <div class="rec-approaches">${approachesHtml}</div>
+                        <div class="rec-firststeps-label">First Steps</div>
+                        <ul class="rec-firststeps">${stepsHtml}</ul>
+                    </div>
+                `;
+            }).join('');
+            el.innerHTML = html || '<div class="empty-state">No recommendations available.</div>';
         })();
 
         // ── Save as PDF ──
