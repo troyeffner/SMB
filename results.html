@@ -483,14 +483,21 @@
             margin: 0.75in;
         }
         @media print {
-            body { background-color: white; }
-            .site-nav, .pdf-bar, .footer, .no-data-banner { display: none !important; }
+            body { background-color: white; margin: 0; padding: 0; }
+            .site-nav, .pdf-bar, .footer, .no-data-banner {
+                display: none !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
 
             .hero {
                 padding: 20px 0 16px;
                 background-color: #1a365d !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+                page-break-before: avoid;
+                break-before: avoid;
+                margin-top: 0;
             }
             .hero h1 { font-size: 22px; }
 
@@ -500,10 +507,12 @@
                 box-shadow: none;
                 border-radius: 0;
                 margin-bottom: 18px;
-                page-break-inside: avoid;
-                break-inside: avoid;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+            }
+            .section-header {
+                page-break-after: avoid;
+                break-after: avoid;
             }
 
             .mini-matrix {
