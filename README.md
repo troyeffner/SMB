@@ -27,7 +27,7 @@
 - pnpm (package manager; zero managed dependencies today)
 - `challenges-content.js` — single source of truth for all challenge content
 - localStorage for cross-step state (keys: `smb_selected`, `smb_placements`, `smb_axis`, `smb_intersections`)
-- GitHub Pages (current deploy) → Vercel (target deploy)
+- Vercel (active deploy target via GitHub Actions)
 - PWA-ready (`manifest.json`; icons TODO)
 - Mobile-optimized for iPhone 13 Pro+ / iOS 26+
 
@@ -53,9 +53,7 @@ Open `http://localhost:3000` — you'll land on the index page.
 
 ## Environment Variables
 
-No environment variables are required today (fully client-side).
-
-A `.env.example` file will be added before any Supabase work begins.
+No runtime environment variables are required today (fully client-side).
 
 **Policy:** Never commit secrets. `.env.local` is gitignored. Only `.env.example` (placeholder values, no secrets) is committed.
 
@@ -63,17 +61,19 @@ A `.env.example` file will be added before any Supabase work begins.
 
 ## Deploy
 
-### Current: GitHub Pages
-Pushes to `main` auto-deploy via `.github/workflows/static.yml`.
-No build step — the repo root is served as-is.
+### Active: Vercel via GitHub Actions
+- PRs to `main` trigger preview deployments
+- Pushes to `main` trigger production deployment
+- Workflow: `.github/workflows/static.yml`
+- Project config: `vercel.json`
 
-### Target: Vercel
-```bash
-# TODO: add vercel.json first, then:
-npx vercel          # preview deploy
-npx vercel --prod   # production deploy
-```
-Once wired, branch pushes will create preview URLs automatically.
+Required GitHub Actions secrets:
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+### Migration History
+GitHub Pages was previously used for deployment. Vercel is now the active CI deploy target.
 
 ---
 

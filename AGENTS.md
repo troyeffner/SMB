@@ -5,7 +5,7 @@
 A 4-step client-side toolkit that helps SMB directors (insurance company level) identify, prioritize, map, and summarize their core business challenges. No backend, no auth — pure browser-based HTML/CSS/JS deployed as a static site.
 
 Repo: https://github.com/troyeffner/SMB
-Live: https://troyeffner.github.io/SMB/ (GitHub Pages — target: Vercel)
+Live: https://troyeffner.github.io/SMB/ (historical Pages URL; active deploy via Vercel)
 Owner: Troy Effner · Business Solutions
 
 ---
@@ -18,8 +18,8 @@ Owner: Troy Effner · Business Solutions
 | Content library | `challenges-content.js` | Single source of truth for all challenge data |
 | Package manager | pnpm | `pnpm-lock.yaml` present; zero managed deps |
 | Dev server | browser-sync (npx) | Live-reload on file save |
-| Deploy — current | GitHub Pages | `.github/workflows/static.yml` |
-| Deploy — target | Vercel | TODO: add `vercel.json` + migrate workflow |
+| Deploy — active | Vercel | `.github/workflows/static.yml` + `vercel.json` |
+| Deploy — previous | GitHub Pages | Historical workflow replaced during migration |
 | Database | Supabase (not yet active) | Tables not provisioned; see `CODEX_CONTEXT.md` Data Readiness |
 | State (client) | localStorage | 4 keys — see Architecture Map |
 | PWA | `manifest.json` | Installable on iOS/Android |
@@ -47,11 +47,13 @@ pnpm dev
 # Typecheck — NONE (vanilla JS)
 # TODO: add JSDoc types or migrate to TypeScript
 
-# Deploy preview (target: Vercel)
-# TODO: npx vercel --prebuilt   (once vercel.json exists)
+# Deploy preview (PR -> main)
+# Automatic via GitHub Actions + Vercel secrets
+# Optional local preview: npx vercel
 
-# Deploy production (target: Vercel)
-# TODO: npx vercel --prod        (once workflow migrated)
+# Deploy production (push -> main)
+# Automatic via GitHub Actions + Vercel secrets
+# Optional local production: npx vercel --prod
 ```
 
 ---
@@ -69,7 +71,8 @@ pnpm dev
 ├── challenges-content.js               CONTENT SOURCE OF TRUTH — all challenge data
 ├── manifest.json                       PWA manifest (icons TODO)
 ├── package.json                        pnpm config + dev script
-├── .github/workflows/static.yml        GitHub Actions deploy → GitHub Pages
+├── .github/workflows/static.yml        GitHub Actions deploy → Vercel (preview + production)
+├── vercel.json                         Vercel project config for static deployment
 ├── 07_Strategy_Canon_Artifacts/        Migration baseline + strategy docs
 ├── 08_Data_Model_and_API_Contracts/    Data model + API contracts + checklists
 └── .claude/                            Claude Code local config (not committed to CI)
